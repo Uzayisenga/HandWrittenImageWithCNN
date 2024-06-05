@@ -1,0 +1,6 @@
+Flask
+tensorflow
+pillow
+numpy
+gunicorn
+pip freeze > requirements.txt

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digit Recognition</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 50px;
+        }
+        .container {
+            max-width: 600px;
+        }
+        .card {
+            margin-top: 20px;
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+        }
+        .result {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+        .metrics p {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>Upload an image of a handwritten digit</h2>
+            </div>
+            <div class="card-body">
+                <form id="upload-form" enctype="multipart/form-data" class="form-inline">
+                    <div class="form-group mb-2">
+                        <input type="file" class="form-control-file" name="image" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2">Predict</button>
+                </form>
+                <div id="result" class="result"></div>
+                <div id="metrics" class="metrics">
+                    <p>Model Accuracy on Test Set: <span id="test-accuracy">{{ accuracy }}</span></p>
+                    <p>Model Loss on Test Set: <span id="test-loss">{{ loss }}</span></p>
+                    <p>Model Accuracy on Uploaded Image: <span id="image-accuracy"></span></p>
+                    <p>Model Loss on Uploaded Image: <span id="image-loss"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            if (result.error) {
+                document.getElementById('result').innerText = `Error: ${result.error}`;
+            } else {
+                document.getElementById('result').innerText = `Predicted Digit: ${result.digit}`;
+                document.getElementById('image-accuracy').innerText = result.accuracy;
+                document.getElementById('image-loss').innerText = result.loss;
+            }
+        });
+    </script>
+</body>
+</html>
